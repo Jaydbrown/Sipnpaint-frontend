@@ -85,7 +85,7 @@ const LocationsSection = () => {
       waitlist: `Hi! I'd like to join the waitlist for ${city}.`,
     };
     
-    const whatsappNumber = '2341234567890';
+    const whatsappNumber = '2347089403978';
     const message = encodeURIComponent(messages[type]);
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
   };

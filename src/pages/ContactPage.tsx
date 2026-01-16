@@ -36,8 +36,8 @@ const ContactPage = () => {
     {
       title: 'Call Us',
       description: 'Speak directly with our team during business hours (Mon-Sat, 9AM-6PM)',
-      link: 'tel:+2341234567890',
-      linkText: '+234 123 456 7890',
+      link: 'tel:+2347089403978',
+      linkText: '+234 708 940 3978',
     },
     {
       title: 'Email Us',
@@ -48,7 +48,7 @@ const ContactPage = () => {
     {
       title: 'WhatsApp',
       description: 'Quick questions? Chat with us on WhatsApp',
-      link: 'https://wa.me/2341234567890',
+      link: 'https://wa.me/2347089403978',
       linkText: 'Message on WhatsApp',
     },
     {
@@ -87,7 +87,7 @@ const ContactPage = () => {
           className="relative h-[500px]"
         >
           <img
-            src="public/assets/image1.png"
+            src="assets/image1.png"
             alt="Contact us"
             className="w-full h-full object-cover shadow-card"
           />
