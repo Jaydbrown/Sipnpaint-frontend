@@ -1,9 +1,16 @@
-/// <reference types="vite/client" />
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL?: string;
-}
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
