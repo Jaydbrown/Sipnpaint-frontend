@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import Button from '@/components/ui/Button';
 
 const heroImages = [
-  'public/assets/image.png',
-  'public/assets/image-copy-3.png',
-  'public/assets/image-copy.png',
-  'public/assets/image5.png',
+  'assets/image.png',
+  'assets/image-copy-3.png',
+  'assets/image-copy.png',
+  'assets/image5.png',
 ];
 
 const HeroSection = () => {
