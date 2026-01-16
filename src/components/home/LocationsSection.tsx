@@ -92,13 +92,12 @@ const LocationsSection = () => {
 
   return (
     <PaperSection
-      id="locations"
       hasTornTop
       hasTornBottom
       bgColor="#F8FAFC"
       className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12"
     >
-      <div ref={ref} className="max-w-7xl mx-auto">
+      <div id="locations" ref={ref} className="max-w-7xl mx-auto">
         <motion.div 
           className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 lg:mb-16"
           initial={{ opacity: 0, y: -30 }}
@@ -208,7 +207,7 @@ const LocationsSection = () => {
                           Join Waitlist
                         </Button>
                         <Button 
-                          variant="outline" 
+                          variant="secondary" 
                           size="sm"
                           className="w-full text-xs sm:text-sm"
                           onClick={(e) => {

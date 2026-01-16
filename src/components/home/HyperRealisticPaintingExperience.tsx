@@ -139,7 +139,7 @@ const Interactive3DPainting = () => {
     artwork.castShadow = true;
     canvasGroup.add(artwork);
 
-    addPaintLayers(canvasGroup, canvasWidth, canvasHeight);
+    addPaintLayers(canvasGroup);
 
     scene.add(canvasGroup);
 
@@ -155,11 +155,17 @@ const Interactive3DPainting = () => {
 
       const colorChoice = Math.random();
       if (colorChoice < 0.33) {
-        colors[i] = 0.43; colors[i + 1] = 0.16; colors[i + 2] = 0.85;
+        colors[i] = 0.43; 
+        colors[i + 1] = 0.16; 
+        colors[i + 2] = 0.85;
       } else if (colorChoice < 0.66) {
-        colors[i] = 0.91; colors[i + 1] = 0.34; colors[i + 2] = 0.58;
+        colors[i] = 0.91; 
+        colors[i + 1] = 0.34; 
+        colors[i + 2] = 0.58;
       } else {
-        colors[i] = 0.06; colors[i + 1] = 0.73; colors[i + 2] = 0.51;
+        colors[i] = 0.06; 
+        colors[i + 1] = 0.73; 
+        colors[i + 2] = 0.51;
       }
     }
 
@@ -197,8 +203,9 @@ const Interactive3DPainting = () => {
       mouseY = -((e.touches[0].clientY - rect.top) / rect.height) * 2 + 1;
     };
 
-    containerRef.current.addEventListener('mousemove', handleMouseMove);
-    containerRef.current.addEventListener('touchmove', handleTouchMove, { passive: true });
+    const currentContainer = containerRef.current;
+    currentContainer.addEventListener('mousemove', handleMouseMove);
+    currentContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -213,13 +220,17 @@ const Interactive3DPainting = () => {
 
       canvasGroup.position.y = Math.sin(time * 0.5) * 0.1;
 
-      const positions = particlesGeometry.attributes.position.array as Float32Array;
+      const positionsArray = particlesGeometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particlesCount * 3; i += 3) {
-        positions[i] += Math.sin(time + positions[i + 1]) * 0.0005;
-        positions[i + 1] += Math.cos(time + positions[i]) * 0.0005;
+        positionsArray[i] = positionsArray[i] + Math.sin(time + positionsArray[i + 1]) * 0.0005;
+        positionsArray[i + 1] = positionsArray[i + 1] + Math.cos(time + positionsArray[i]) * 0.0005;
         
-        if (Math.abs(positions[i]) > 5) positions[i] *= -0.9;
-        if (Math.abs(positions[i + 1]) > 4) positions[i + 1] *= -0.9;
+        if (Math.abs(positionsArray[i]) > 5) {
+          positionsArray[i] = positionsArray[i] * -0.9;
+        }
+        if (Math.abs(positionsArray[i + 1]) > 4) {
+          positionsArray[i + 1] = positionsArray[i + 1] * -0.9;
+        }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
       particles.rotation.y = time * 0.05;
@@ -243,10 +254,10 @@ const Interactive3DPainting = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (containerRef.current) {
-        containerRef.current.removeEventListener('mousemove', handleMouseMove);
-        containerRef.current.removeEventListener('touchmove', handleTouchMove);
-        containerRef.current.removeChild(renderer.domElement);
+      currentContainer.removeEventListener('mousemove', handleMouseMove);
+      currentContainer.removeEventListener('touchmove', handleTouchMove);
+      if (currentContainer.contains(renderer.domElement)) {
+        currentContainer.removeChild(renderer.domElement);
       }
       renderer.dispose();
       artworkTexture.dispose();
@@ -311,20 +322,20 @@ const Interactive3DPainting = () => {
       ctx.translate(stroke.x, stroke.y);
       ctx.rotate(stroke.rotation);
       
-      const strokeGradient = ctx.createLinearGradient(-stroke.w/2, 0, stroke.w/2, 0);
+      const strokeGradient = ctx.createLinearGradient(-stroke.w / 2, 0, stroke.w / 2, 0);
       strokeGradient.addColorStop(0, `${stroke.color}00`);
       strokeGradient.addColorStop(0.2, `${stroke.color}cc`);
       strokeGradient.addColorStop(0.8, `${stroke.color}cc`);
       strokeGradient.addColorStop(1, `${stroke.color}00`);
       
       ctx.fillStyle = strokeGradient;
-      ctx.fillRect(-stroke.w/2, -stroke.h/2, stroke.w, stroke.h);
+      ctx.fillRect(-stroke.w / 2, -stroke.h / 2, stroke.w, stroke.h);
       ctx.restore();
     });
 
     for (let i = 0; i < 200; i++) {
-      const colors = ['#6d28d9', '#e95793', '#10b981', '#ffc857'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
+      const colorsList = ['#6d28d9', '#e95793', '#10b981', '#ffc857'];
+      const color = colorsList[Math.floor(Math.random() * colorsList.length)];
       const size = Math.random() * 30 + 5;
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height;
@@ -348,7 +359,7 @@ const Interactive3DPainting = () => {
     return new THREE.CanvasTexture(canvas);
   }
 
-  function addPaintLayers(group: THREE.Group, width: number, height: number) {
+  function addPaintLayers(group: THREE.Group) {
     const paintDetails = [
       { x: -0.8, y: 0.5, size: 0.3, color: 0x6d28d9, height: 0.04 },
       { x: 0.5, y: 0.2, size: 0.4, color: 0xe95793, height: 0.05 },
@@ -364,9 +375,7 @@ const Interactive3DPainting = () => {
         emissive: detail.color,
         emissiveIntensity: 0.1,
         roughness: 0.6,
-        metalness: 0.3,
-        clearcoat: 0.5,
-        clearcoatRoughness: 0.3
+        metalness: 0.3
       });
       const blob = new THREE.Mesh(geometry, material);
       blob.position.set(detail.x, detail.y, detail.height);
@@ -391,13 +400,13 @@ const Interactive3DPainting = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <div className="text-coral text-xs sm:text-sm font-semibold tracking-[2px] sm:tracking-[3px] uppercase mb-3 sm:mb-4">
+          <div className="text-coral font-bold text-xs sm:text-sm tracking-[2px] sm:tracking-[3px] uppercase mb-3 sm:mb-4">
             See It Come To Life
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-purple-800 mb-4 sm:mb-6 tracking-tight px-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-purple-800 mb-4 sm:mb-6 tracking-tight px-4">
             Your Masterpiece In 3D
           </h2>
-          <p className="text-base sm:text-lg text-text-muted leading-relaxed px-4">
+          <p className="font-sans text-base sm:text-lg text-text-muted leading-relaxed px-4">
             This is the kind of vibrant, expressive artwork you'll create at our sessions. Move your mouse to explore the painting from different angles.
           </p>
         </motion.div>
@@ -407,7 +416,7 @@ const Interactive3DPainting = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] bg-gradient-to-br from-paper-warm/30 to-lavender-100/30 shadow-card border-2 sm:border-4 border-text-main/10 overflow-hidden"
+          className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] shadow-card border-2 sm:border-4 border-text-main/10 overflow-hidden bg-paper-warm/30"
         >
           <div ref={containerRef} className="w-full h-full" />
           
@@ -415,7 +424,7 @@ const Interactive3DPainting = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
-            className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 bg-purple-800/90 backdrop-blur-sm text-paper-white px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-medium tracking-wide pointer-events-none"
+            className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 bg-purple-800/90 backdrop-blur-sm text-paper-white px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold tracking-wide pointer-events-none"
           >
             ✨ <span className="hidden sm:inline">Move your mouse to explore the artwork</span>
             <span className="sm:hidden">Touch to explore</span>
@@ -429,10 +438,10 @@ const Interactive3DPainting = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-center mt-8 sm:mt-12 max-w-2xl mx-auto px-4"
         >
-          <p className="text-base sm:text-lg text-text-main leading-relaxed mb-3 sm:mb-4">
+          <p className="font-sans text-base sm:text-lg text-text-main leading-relaxed mb-3 sm:mb-4">
             Every painting session is guided by professional artists who help you unlock your creativity. No experience needed—just bring your imagination and willingness to explore.
           </p>
-          <p className="text-lg sm:text-xl text-purple-600 font-medium italic">
+          <p className="font-handwriting text-lg sm:text-xl text-purple-600 font-medium">
             This could be hanging on your wall by the end of the evening.
           </p>
         </motion.div>
